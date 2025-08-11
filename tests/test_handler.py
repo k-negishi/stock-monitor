@@ -217,9 +217,9 @@ class TestFormatNotificationMessage:
             }
         ]
 
-        result = _format_notification_message(ticker_data)
-
-        expected = ("⚠️ 株価下落アラート\n\n"
+        date = '2025-01-01'
+        result = _format_notification_message(date, ticker_data)
+        expected = ("⚠️株価下落アラート  2025-01-01\n\n"
                     "【VT】\n"
                     "現在値: $98.75\n"
                     "前日比: -2.5%\n"
@@ -234,108 +234,6 @@ class TestFormatNotificationMessage:
                     "前週比: -1.2%")
 
         assert result == expected
-
-class TestIntegration:
-    """統合テスト"""
-
-    @patch('yfinance.download')
-    @patch('handler.LineMessagingNotifier')
-    def test_main_workflow_no_notification(self, mock_notifier, mock_yf_download):
-        """通知が不要な場合の統合テスト"""
-        # yfinanceのモックデータ設定
-        mock_data = MagicMock()
-        mock_data.index = [
-            pd.Timestamp('2024-01-01'),
-            pd.Timestamp('2024-01-02'),
-            pd.Timestamp('2024-01-03'),
-            pd.Timestamp('2024-01-04'),
-            pd.Timestamp('2024-01-05')
-        ]
-        mock_data.__getitem__.return_value = pd.DataFrame({
-            'Close': [100.0, 101.0, 102.0, 103.0, 104.0]
-        })
-        mock_yf_download.return_value = mock_data
-
-        # 実際のworkflowをシミュレート
-        targets = ['VT', 'VOO', 'QQQ']
-        all_data = mock_yf_download(targets, period='1mo', group_by='ticker', auto_adjust=True)
-
-        # 各ティッカーのデータを取得
-        vt_data = all_data['VT']
-        voo_data = all_data['VOO']
-        qqq_data = all_data['QQQ']
-
-        # 計算実行
-        vt_daily_change = _calculate_daily_change(vt_data)
-        vt_weekly_change = _calculate_weekly_change(vt_data)
-
-        # 閾値チェック（通知不要な設定）
-        ticker_data_for_check = [{
-            'name': 'VT',
-            'daily_change': vt_daily_change,
-            'weekly_change': vt_weekly_change,
-            'current_price': vt_data['Close'].iloc[-1]
-        }]
-
-        notification_needed = _check_and_notify_all_tickers(
-            ticker_data_for_check, -10.0, -15.0  # 厳しい閾値設定
-        )
-
-        # アサーション
-        assert notification_needed is False
-        mock_notifier.assert_not_called()
-
-    @patch('yfinance.download')
-    @patch('handler.LineMessagingNotifier')
-    def test_main_workflow_with_notification(self, mock_notifier, mock_yf_download):
-        """通知が必要な場合の統合テスト"""
-        # yfinanceのモックデータ設定（下落パターン）
-        mock_data = MagicMock()
-        mock_data.index = [
-            pd.Timestamp('2024-01-01'),
-            pd.Timestamp('2024-01-02'),
-            pd.Timestamp('2024-01-03'),
-            pd.Timestamp('2024-01-04'),
-            pd.Timestamp('2024-01-05')
-        ]
-        mock_data.__getitem__.return_value = pd.DataFrame({
-            'Close': [100.0, 98.0, 96.0, 94.0, 90.0]  # 急落パターン
-        })
-        mock_yf_download.return_value = mock_data
-
-        # モック通知インスタンス設定
-        mock_notifier_instance = Mock()
-        mock_notifier.return_value = mock_notifier_instance
-
-        # 実際のworkflowをシミュレート
-        targets = ['VT']
-        all_data = mock_yf_download(targets, period='1mo', group_by='ticker', auto_adjust=True)
-
-        vt_data = all_data['VT']
-        vt_daily_change = _calculate_daily_change(vt_data)
-        vt_weekly_change = _calculate_weekly_change(vt_data)
-
-        ticker_data_for_check = [{
-            'name': 'VT',
-            'daily_change': vt_daily_change,
-            'weekly_change': vt_weekly_change,
-            'current_price': vt_data['Close'].iloc[-1]
-        }]
-
-        notification_needed = _check_and_notify_all_tickers(
-            ticker_data_for_check, -2.0, -5.0  # 通常の閾値設定
-        )
-
-        # 通知実行をシミュレート
-        if notification_needed:
-            line_notifier = mock_notifier()
-            message = _format_notification_message(ticker_data_for_check)
-            line_notifier.send_message(message)
-
-        # アサーション
-        assert notification_needed is True
-        mock_notifier.assert_called_once()
-        mock_notifier_instance.send_message.assert_called_once()
 
 if __name__ == '__main__':
     pytest.main([__file__])

@@ -66,9 +66,13 @@ def lambda_handler(event, context):
     # notification_needed = check_and_notify_all_tickers(ticker_data_for_check, DAILY_THRESHOLD, WEEKLY_THRESHOLD)
     notification_needed = True
 
-    # 閾値を下回るETFが1つでも存在する場合、LINE通知を送信
+# 閾値を下回るETFが1つでも存在する場合、LINE通知を送信
     if notification_needed:
         line_notifier = LineMessagingNotifier()
+
+        # vt のデータを使って日付を取得
+        latest_date = vt_data.index[-1].date()
+
         message = _format_notification_message(ticker_data_for_check)
         line_notifier.send_message(message)
 
@@ -139,7 +143,10 @@ def _check_and_notify_all_tickers(
         for ticker in ticker_data_list
     )
 
-def _format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
+def _format_notification_message(
+        latest_date: str,
+        ticker_data_list: List[Dict[str, float]]
+) -> str:
     """
     LINE通知用のメッセージを整形
 
@@ -150,7 +157,8 @@ def _format_notification_message(ticker_data_list: List[Dict[str, float]]) -> st
       Returns:
         str: 整形されたメッセージ文字列
     """
-    alert_message = "⚠️ 株価下落アラート\n\n"
+
+    alert_message = "⚠️株価下落アラート  " + f"{latest_date}\n\n"
     for ticker in ticker_data_list:
         alert_message += f"【{ticker['name']}】\n"
         alert_message += f"現在値: ${ticker['current_price']:.2f}\n"
