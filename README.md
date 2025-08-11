@@ -40,7 +40,7 @@ VT、VOO、QQQの人気ETFの価格を監視し、設定した割合よりも下
 
 ### Line 通知メッセージの例
 ```
-⚠️株価下落アラート
+⚠️株価下落アラート  2025-08-01
 
 【VT】 
 現在値: $98.75
@@ -125,7 +125,7 @@ An AWS Lambda–based system that automatically monitors the stock prices of pop
 ### Example LINE Notification Message
 Note: Notification messages are only available in Japanese.
 ```
-⚠️株価下落アラート
+⚠️株価下落アラート  2025-08-01
 
 【VT】 
 現在値: $98.75
