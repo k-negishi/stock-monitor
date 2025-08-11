@@ -6,10 +6,10 @@ import yfinance as yf
 
 from src.line_notifier import LineMessagingNotifier
 
-def is_below_threshold(change: float, threshold: float) -> bool:
+def _is_below_threshold(change: float, threshold: float) -> bool:
     return change <= threshold
 
-def calculate_daily_change(stock_data: pd.DataFrame):
+def _calculate_daily_change(stock_data: pd.DataFrame):
     """
     前日比の変動率を計算
 
@@ -24,7 +24,7 @@ def calculate_daily_change(stock_data: pd.DataFrame):
     change = ((latest - previous) / previous) * 100
     return round(change, 2)
 
-def calculate_weekly_change(stock_data: pd.DataFrame):
+def _calculate_weekly_change(stock_data: pd.DataFrame):
     """
     1週間前比の変動率を計算
 
@@ -40,7 +40,7 @@ def calculate_weekly_change(stock_data: pd.DataFrame):
     return round(change_pct, 2)
 
 
-def check_and_notify_all_tickers(
+def _check_and_notify_all_tickers(
         ticker_data_list: List[Dict[str, float]],
         daily_threshold: float,
         weekly_threshold: float
@@ -57,12 +57,12 @@ def check_and_notify_all_tickers(
     """
     # 各ティッカーの閾値判定
     return any(
-        is_below_threshold(ticker['daily_change'], daily_threshold) or
-        is_below_threshold(ticker['weekly_change'], weekly_threshold)
+        _is_below_threshold(ticker['daily_change'], daily_threshold) or
+        _is_below_threshold(ticker['weekly_change'], weekly_threshold)
         for ticker in ticker_data_list
     )
 
-def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
+def _format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
     """
     LINE通知用のメッセージを整形
 
@@ -104,14 +104,14 @@ def lambda_handler(event, context):
     qqq_data = all_data['QQQ']
 
     # 前日との計算
-    vt_daily_change = calculate_daily_change(vt_data)
-    voo_daily_change = calculate_daily_change(voo_data)
-    qqq_daily_change = calculate_daily_change(qqq_data)
+    vt_daily_change = _calculate_daily_change(vt_data)
+    voo_daily_change = _calculate_daily_change(voo_data)
+    qqq_daily_change = _calculate_daily_change(qqq_data)
 
     # 1週間前との計算
-    vt_1wk_change = calculate_weekly_change(vt_data)
-    voo_1wk_change = calculate_weekly_change(voo_data)
-    qqq_1wk_change = calculate_weekly_change(qqq_data)
+    vt_1wk_change = _calculate_weekly_change(vt_data)
+    voo_1wk_change = _calculate_weekly_change(voo_data)
+    qqq_1wk_change = _calculate_weekly_change(qqq_data)
 
     # 閾値の設定
     DAILY_THRESHOLD = 999
@@ -145,7 +145,7 @@ def lambda_handler(event, context):
     # 閾値を下回るETFが1つでも存在する場合、LINE通知を送信
     if notification_needed:
         line_notifier = LineMessagingNotifier()
-        message = format_notification_message(ticker_data_for_check)
+        message = _format_notification_message(ticker_data_for_check)
         line_notifier.send_message(message)
 
     # Lambda用のレスポンス

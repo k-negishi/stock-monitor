@@ -11,11 +11,11 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'src'))
 
 from src.handler import (
-    is_below_threshold,
-    calculate_daily_change,
-    calculate_weekly_change,
-    check_and_notify_all_tickers,
-    format_notification_message
+    _is_below_threshold,
+    _calculate_daily_change,
+    _calculate_weekly_change,
+    _check_and_notify_all_tickers,
+    _format_notification_message
 )
 
 
@@ -24,19 +24,19 @@ class TestIsBelowThreshold:
 
     def test_is_below_threshold_true_case(self):
         """閾値を下回る場合のテスト"""
-        assert is_below_threshold(-3.0, -2.0) is True
-        assert is_below_threshold(-2.0, -2.0) is True  # 等しい場合もTrue
+        assert _is_below_threshold(-3.0, -2.0) is True
+        assert _is_below_threshold(-2.0, -2.0) is True  # 等しい場合もTrue
 
     def test_is_below_threshold_false_case(self):
         """閾値を上回る場合のテスト"""
-        assert is_below_threshold(-1.0, -2.0) is False
-        assert is_below_threshold(0.0, -1.0) is False
+        assert _is_below_threshold(-1.0, -2.0) is False
+        assert _is_below_threshold(0.0, -1.0) is False
 
     def test_is_below_threshold_edge_cases(self):
         """エッジケースのテスト"""
-        assert is_below_threshold(0.0, 0.0) is True
-        assert is_below_threshold(-0.1, 0.0) is True
-        assert is_below_threshold(0.1, 0.0) is False
+        assert _is_below_threshold(0.0, 0.0) is True
+        assert _is_below_threshold(-0.1, 0.0) is True
+        assert _is_below_threshold(0.1, 0.0) is False
 
 
 class TestCalculateDailyChange:
@@ -49,7 +49,7 @@ class TestCalculateDailyChange:
             'Close': [100.0, 105.0]  # 5%の上昇
         })
 
-        result = calculate_daily_change(test_data)
+        result = _calculate_daily_change(test_data)
         assert result == 5.0
 
     def test_calculate_daily_change_negative(self):
@@ -58,7 +58,7 @@ class TestCalculateDailyChange:
             'Close': [100.0, 97.0]  # 3%の下落
         })
 
-        result = calculate_daily_change(test_data)
+        result = _calculate_daily_change(test_data)
         assert result == -3.0
 
     def test_calculate_daily_change_no_change(self):
@@ -67,7 +67,7 @@ class TestCalculateDailyChange:
             'Close': [100.0, 100.0]  # 変化なし
         })
 
-        result = calculate_daily_change(test_data)
+        result = _calculate_daily_change(test_data)
         assert result == 0.0
 
 
@@ -80,7 +80,7 @@ class TestCalculateWeeklyChange:
             'Close': [100.0, 102.0, 104.0, 103.0, 110.0]  # 10%の上昇
         })
 
-        result = calculate_weekly_change(test_data)
+        result = _calculate_weekly_change(test_data)
         assert result == 10.0
 
     def test_calculate_weekly_change_negative(self):
@@ -89,7 +89,7 @@ class TestCalculateWeeklyChange:
             'Close': [100.0, 98.0, 96.0, 94.0, 90.0]  # 10%の下落
         })
 
-        result = calculate_weekly_change(test_data)
+        result = _calculate_weekly_change(test_data)
         assert result == -10.0
 
     def test_calculate_weekly_change_no_change(self):
@@ -98,7 +98,7 @@ class TestCalculateWeeklyChange:
             'Close': [100.0, 102.0, 98.0, 105.0, 100.0]  # 変化なし
         })
 
-        result = calculate_weekly_change(test_data)
+        result = _calculate_weekly_change(test_data)
         assert result == 0.0
 
 class TestCheckAndNotifyAllTickers:
@@ -121,7 +121,7 @@ class TestCheckAndNotifyAllTickers:
             }
         ]
 
-        result = check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
+        result = _check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
         assert result is False
 
     def test_check_and_notify_daily_alert_needed(self):
@@ -135,7 +135,7 @@ class TestCheckAndNotifyAllTickers:
             }
         ]
 
-        result = check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
+        result = _check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
         assert result is True
 
     def test_check_and_notify_weekly_alert_needed(self):
@@ -149,7 +149,7 @@ class TestCheckAndNotifyAllTickers:
             }
         ]
 
-        result = check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
+        result = _check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
         assert result is True
 
     def test_check_and_notify_both_alerts_needed(self):
@@ -163,7 +163,7 @@ class TestCheckAndNotifyAllTickers:
             }
         ]
 
-        result = check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
+        result = _check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
         assert result is True
 
     def test_check_and_notify_mixed_tickers(self):
@@ -189,7 +189,7 @@ class TestCheckAndNotifyAllTickers:
             }
         ]
 
-        result = check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
+        result = _check_and_notify_all_tickers(ticker_data, -2.0, -5.0)
         assert result is True
 
 class TestFormatNotificationMessage:
@@ -217,7 +217,7 @@ class TestFormatNotificationMessage:
             }
         ]
 
-        result = format_notification_message(ticker_data)
+        result = _format_notification_message(ticker_data)
 
         expected = ("⚠️ 株価下落アラート\n\n"
                     "【VT】\n"
@@ -266,8 +266,8 @@ class TestIntegration:
         qqq_data = all_data['QQQ']
 
         # 計算実行
-        vt_daily_change = calculate_daily_change(vt_data)
-        vt_weekly_change = calculate_weekly_change(vt_data)
+        vt_daily_change = _calculate_daily_change(vt_data)
+        vt_weekly_change = _calculate_weekly_change(vt_data)
 
         # 閾値チェック（通知不要な設定）
         ticker_data_for_check = [{
@@ -277,7 +277,7 @@ class TestIntegration:
             'current_price': vt_data['Close'].iloc[-1]
         }]
 
-        notification_needed = check_and_notify_all_tickers(
+        notification_needed = _check_and_notify_all_tickers(
             ticker_data_for_check, -10.0, -15.0  # 厳しい閾値設定
         )
 
@@ -312,8 +312,8 @@ class TestIntegration:
         all_data = mock_yf_download(targets, period='1mo', group_by='ticker', auto_adjust=True)
 
         vt_data = all_data['VT']
-        vt_daily_change = calculate_daily_change(vt_data)
-        vt_weekly_change = calculate_weekly_change(vt_data)
+        vt_daily_change = _calculate_daily_change(vt_data)
+        vt_weekly_change = _calculate_weekly_change(vt_data)
 
         ticker_data_for_check = [{
             'name': 'VT',
@@ -322,14 +322,14 @@ class TestIntegration:
             'current_price': vt_data['Close'].iloc[-1]
         }]
 
-        notification_needed = check_and_notify_all_tickers(
+        notification_needed = _check_and_notify_all_tickers(
             ticker_data_for_check, -2.0, -5.0  # 通常の閾値設定
         )
 
         # 通知実行をシミュレート
         if notification_needed:
             line_notifier = mock_notifier()
-            message = format_notification_message(ticker_data_for_check)
+            message = _format_notification_message(ticker_data_for_check)
             line_notifier.send_message(message)
 
         # アサーション
