@@ -73,7 +73,7 @@ def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str
       Returns:
         str: 整形されたメッセージ文字列
     """
-    alert_message = "📊 株価下落アラート\n\n"
+    alert_message = "⚠️ 株価下落アラート\n\n"
     for ticker in ticker_data_list:
         alert_message += f"【{ticker['name']}】\n"
         alert_message += f"現在値: ${ticker['current_price']:.2f}\n"
