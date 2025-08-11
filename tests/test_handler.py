@@ -219,7 +219,7 @@ class TestFormatNotificationMessage:
 
         result = format_notification_message(ticker_data)
 
-        expected = ("⚠ 株価下落アラート\n\n"
+        expected = ("⚠️ 株価下落アラート\n\n"
                     "【VT】\n"
                     "現在値: $98.75\n"
                     "前日比: -2.5%\n"
