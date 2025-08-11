@@ -3,12 +3,7 @@ import requests
 import logging
 from functools import wraps
 
-from dotenv import load_dotenv
-
 logger = logging.getLogger(__name__)
-
-# .envからロード
-load_dotenv()
 
 def retry_notification(max_retries=3, delay=10):
     """
