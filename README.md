@@ -77,14 +77,6 @@ pip install -r requirements.txt
 
 #### ローカル実行
 
-```bash
-# 関数の実行
-sam local invoke StockAlertFunction
-
-# APIの起動（開発用）
-sam local start-api
-```
-
 #### テスト実行
 
 ```bash
@@ -160,14 +152,6 @@ pip install -r requirements.txt
 ### Local Development
 
 #### Local Execution
-
-```bash
-# Execute function
-sam local invoke StockAlertFunction
-
-# Start API (for development)
-sam local start-api
-```
 
 #### Run Tests
 
