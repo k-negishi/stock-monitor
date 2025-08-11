@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: ETF下落アラート
+
+Parameters:
+  LineNotifyToken:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /stock-alert/line-notify-token
+    Description: LINE Notify API Token
+
+Globals:
+  Function:
+    Timeout: 180
+    MemorySize: 256
+    Runtime: python3.13
+
+Resources:
+  StockAlertFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: stock-alert-function
+      CodeUri: src/
+      Handler: handler.lambda_handler
+      Description: ETF下落監視Lambda関数
+      Environment:
+        Variables:
+          LINE_CHANNEL_ACCESS_TOKEN: !Ref LineChannelAccessToken
+          LINE_USER_ID: !Ref LineUserId
+
+      Events:
+        ScheduleEvent:
+          Type: Schedule
+          Properties:
+            # 日本時間AM11:30(UTC AM2:30, NY時間 PM 22:30)
+            Schedule: cron(30 2 ? * TUE-SAT *) # 日本時間の火曜日から土曜日の午前11時30分に実行
+            Description: ETF下落監視のスケジュールイベント
+            Enabled: true
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: "*"
+
+  StockAlertLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/stock-alert-function"
+      RetentionInDays: 14
+
+Outputs:
+  StockAlertFunction:
+    Description: Stock Alert Lambda Function ARN
+    Value: !GetAtt StockAlertFunction.Arn
+
+  StockAlertFunctionIamRole:
+    Description: Implicit IAM Role created for Stock Alert function
+    Value: !GetAtt StockAlertFunctionRole.Arn
