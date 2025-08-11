@@ -70,11 +70,8 @@ def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str
 
 
 def lambda_handler(event, context):
-    print("データ取得開始...")
-
     targets = ['VT', 'VOO', 'QQQ']
     all_data = yf.download(targets, period='1mo', group_by='ticker', auto_adjust=True)
-    print(all_data.index[-1].date())
 
     # 直近の日付が現在日付-1ではない場合は、処理をスキップ(米国市場の休場日を判定)
     # if all_data.index[-1].date() != datetime.datetime.now().date() - datetime.timedelta(days=1):
@@ -92,9 +89,7 @@ def lambda_handler(event, context):
     voo_data = all_data['VOO']
     qqq_data = all_data['QQQ']
 
-    # 個別変数を使った計算例
-    print(f"\n=== 個別変数を使った分析例 ===")
-
+    # 前日との計算
     vt_daily_change = calculate_daily_change(vt_data)
     voo_daily_change = calculate_daily_change(voo_data)
     qqq_daily_change = calculate_daily_change(qqq_data)
@@ -103,10 +98,6 @@ def lambda_handler(event, context):
     vt_1wk_change = calculate_weekly_change(vt_data)
     voo_1wk_change = calculate_weekly_change(voo_data)
     qqq_1wk_change = calculate_weekly_change(qqq_data)
-
-    print(f"VT - 日次: {vt_daily_change}%, 週次: {vt_1wk_change}%")
-    print(f"VOO - 日次: {voo_daily_change}%, 週次: {voo_1wk_change}%")
-    print(f"QQQ - 日次: {qqq_daily_change}%, 週次: {qqq_1wk_change}%")
 
     # 閾値の設定
     DAILY_THRESHOLD = 999
