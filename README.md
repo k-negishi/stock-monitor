@@ -38,6 +38,25 @@ VT、VOO、QQQなどの人気ETFの株価を自動監視し、設定した閾値
 | VOO | バンガード・S&P500 | S&P500指数 |
 | QQQ | インベスコQQQトラスト | NASDAQ100指数 |
 
+### Line 通知メッセージの例
+```
+⚠ 株価下落アラート
+
+【VT】 
+現在値: $98.75
+前日比: -2.5%
+前週比: -4.2%
+
+【VOO】
+現在値: $385.20
+前日比: -1.8%
+前週比: -3.1%
+
+【QQQ】現在値: $350.45
+前日比: 0.5%
+前週比: -1.2%
+```
+
 ### 環境構築手順
 
 #### Python仮想環境の作成
@@ -94,6 +113,26 @@ An AWS Lambda-based system that automatically monitors stock prices of popular E
 | VT | Vanguard Total World Stock ETF | ETF targeting the entire global stock market |
 | VOO | Vanguard S&P 500 ETF | S&P 500 Index |
 | QQQ | Invesco QQQ Trust | NASDAQ-100 Index |
+
+
+### Example for Line Notification Message
+```
+⚠ 株価下落アラート
+
+【VT】 
+現在値: $98.75
+前日比: -2.5%
+前週比: -4.2%
+
+【VOO】
+現在値: $385.20
+前日比: -1.8%
+前週比: -3.1%
+
+【QQQ】現在値: $350.45
+前日比: 0.5%
+前週比: -1.2%
+```
 
 ### Environment Setup
 
