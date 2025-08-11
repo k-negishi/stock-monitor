@@ -40,7 +40,7 @@ VT、VOO、QQQなどの人気ETFの株価を自動監視し、設定した閾値
 
 ### Line 通知メッセージの例
 ```
-⚠ 株価下落アラート
+⚠️株価下落アラート
 
 【VT】 
 現在値: $98.75
@@ -52,7 +52,8 @@ VT、VOO、QQQなどの人気ETFの株価を自動監視し、設定した閾値
 前日比: -1.8%
 前週比: -3.1%
 
-【QQQ】現在値: $350.45
+【QQQ】
+現在値: $350.45
 前日比: 0.5%
 前週比: -1.2%
 ```
@@ -122,9 +123,9 @@ An AWS Lambda–based system that automatically monitors the stock prices of pop
 | QQQ | Invesco QQQ Trust              | Tracks the NASDAQ-100 Index |
 
 ### Example LINE Notification Message
-
+Note: Notification messages are only available in Japanese.
 ```
-⚠ 株価下落アラート
+⚠️株価下落アラート
 
 【VT】 
 現在値: $98.75
