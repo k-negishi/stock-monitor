@@ -90,13 +90,20 @@ sam local start-api
 python -m pytest tests/
 ```
 
+### CI/CD
+GitHub Actions と AWS SAM を使用したサーバーレスアプリケーションの自動デプロイメントを実装しています。
+
+- mainブランチへのプッシュ時に自動テスト・デプロイ実行
+- pytestによるテスト実行後、AWS SAMでLambda関数をデプロイ
+- AWS SAMテンプレートによるインフラストラクチャ管理（Lambda関数、EventBridge）
+
 ---
 
 ## English Version
 
 ### Overview
 
-An AWS Lambda-based system that automatically monitors stock prices of popular ETFs such as VT, VOO, and QQQ, and sends LINE notifications when prices fall below configured thresholds.
+An AWS Lambda–based system that automatically monitors the stock prices of popular ETFs such as VT, VOO, and QQQ, and sends LINE notifications when the prices fall below predefined thresholds.
 
 ### Technologies Used
 - AWS Lambda
@@ -109,13 +116,13 @@ An AWS Lambda-based system that automatically monitors stock prices of popular E
 ### Monitored ETFs
 
 | Symbol | Official Name | Description |
-|---------|---------------|-------------|
-| VT | Vanguard Total World Stock ETF | ETF targeting the entire global stock market |
-| VOO | Vanguard S&P 500 ETF | S&P 500 Index |
-| QQQ | Invesco QQQ Trust | NASDAQ-100 Index |
+|--------|---------------|-------------|
+| VT  | Vanguard Total World Stock ETF | Tracks the performance of the entire global stock market |
+| VOO | Vanguard S&P 500 ETF           | Tracks the S&P 500 Index |
+| QQQ | Invesco QQQ Trust              | Tracks the NASDAQ-100 Index |
 
+### Example LINE Notification Message
 
-### Example for Line Notification Message
 ```
 ⚠ 株価下落アラート
 
@@ -166,3 +173,10 @@ sam local start-api
 ```bash
 python -m pytest tests/
 ```
+
+### CI/CD
+Automated deployment of serverless applications with GitHub Actions and AWS SAM
+
+- Automatically run tests and deploy on every push to the main branch.
+- Execute unit tests with pytest, then package and deploy AWS Lambda functions using AWS SAM.
+- Manage infrastructure as code with SAM templates, including IAM roles, APIs, and other AWS resources.
