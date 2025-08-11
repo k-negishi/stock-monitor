@@ -39,6 +39,7 @@ VT、VOO、QQQの人気ETFの価格を監視し、設定した割合よりも下
 | QQQ | インベスコQQQトラスト | NASDAQ100指数 |
 
 ### LINE 通知メッセージの例
+例1:
 ```
 ⚠️株価下落アラート　2025-04-03
 
@@ -56,6 +57,26 @@ VT、VOO、QQQの人気ETFの価格を監視し、設定した割合よりも下
 現在値: $352.10
 前日比: -5.97%
 前週比: -8.5%
+```
+
+例2:
+```
+⚠️株価下落アラート　2020-03-16
+
+【VT】
+現在値: $61.30
+前日比: -12.0%
+前週比: -17.4%
+
+【VOO】
+現在値: $220.00
+前日比: -11.3%
+前週比: -16.2%
+
+【QQQ】
+現在値: $170.40
+前日比: -11.7%
+前週比: -15.3%
 ```
 
 ### 環境構築手順
@@ -116,6 +137,8 @@ An AWS Lambda–based system that automatically monitors the stock prices of pop
 
 ### Example LINE Notification Message
 Note: Notification messages are only available in Japanese.
+
+Example 1:
 ```
 ⚠️株価下落アラート　2025-04-03
 
@@ -133,6 +156,26 @@ Note: Notification messages are only available in Japanese.
 現在値: $352.10
 前日比: -5.97%
 前週比: -8.5%
+```
+
+Example 2:
+```
+⚠️株価下落アラート　2020-03-16
+
+【VT】
+現在値: $61.30
+前日比: -12.0%
+前週比: -17.4%
+
+【VOO】
+現在値: $220.00
+前日比: -11.3%
+前週比: -16.2%
+
+【QQQ】
+現在値: $170.40
+前日比: -11.7%
+前週比: -15.3%
 ```
 
 ### Environment Setup
