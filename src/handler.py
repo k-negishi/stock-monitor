@@ -73,7 +73,7 @@ def lambda_handler(event, context):
         # vt のデータを使って日付を取得
         latest_date = vt_data.index[-1].date()
 
-        message = _format_notification_message(ticker_data_for_check)
+        message = _format_notification_message(latest_date, ticker_data_for_check)
         line_notifier.send_message(message)
 
     # Lambda用のレスポンス
