@@ -38,8 +38,6 @@ def check_and_notify_all_tickers(
         weekly_threshold: float
 ) -> bool:
     """
-    純粋関数：閾値判定を行い、通知が必要かを判定
-    
     Args:
         ticker_data_list (list): ティッカーデータのリスト
             [{'name': str, 'daily_change': float, 'weekly_change': float, 'current_price': float}, ...]
@@ -61,78 +59,93 @@ def check_and_notify_all_tickers(
     # すべて正常範囲内
     return False
 
+def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
+    alert_message = "📊 株価下落アラート\n\n"
+    for ticker in ticker_data_list:
+        alert_message += f"【{ticker['name']}】\n"
+        alert_message += f"現在値: ${ticker['current_price']:.2f}\n"
+        alert_message += f"前日比: {ticker['daily_change']}%\n"
+        alert_message += f"前週比: {ticker['weekly_change']}%\n\n"
+    return alert_message.strip()
 
-print("データ取得開始...")
 
-targets = ['VT', 'VOO', 'QQQ']
-all_data = yf.download(targets, period='1mo', group_by='ticker', auto_adjust=True)
-print(all_data.index[-1].date())
+def lambda_handler(event, context):
+    """AWS Lambda エントリーポイント"""
+    print("データ取得開始...")
 
-# 直近の日付が現在日付-1ではない場合は、処理をスキップ
-# (米国市場の休場日を判定)
-# if all_data.index[-1].date() != datetime.datetime.now().date() - datetime.timedelta(days=1):
-#     exit(-1)
+    targets = ['VT', 'VOO', 'QQQ']
+    all_data = yf.download(targets, period='1mo', group_by='ticker', auto_adjust=True)
+    print(all_data.index[-1].date())
 
-# 各ティッカーのデータを個別の変数に格納
-vt_data = all_data['VT']
-voo_data = all_data['VOO']
-qqq_data = all_data['QQQ']
+    # 直近の日付が現在日付-1ではない場合は、処理をスキップ(米国市場の休場日を判定)
+    # if all_data.index[-1].date() != datetime.datetime.now().date() - datetime.timedelta(days=1):
+    #     exit(-1)
 
-# 個別変数を使った計算例
-print(f"\n=== 個別変数を使った分析例 ===")
+    # 各ティッカーのデータを個別の変数に格納
+    vt_data = all_data['VT']
+    voo_data = all_data['VOO']
+    qqq_data = all_data['QQQ']
 
-vt_daily_change = calculate_daily_change(vt_data)
-voo_daily_change = calculate_daily_change(voo_data)
-qqq_daily_change = calculate_daily_change(qqq_data)
+    # 個別変数を使った計算例
+    print(f"\n=== 個別変数を使った分析例 ===")
 
-# 1週間前との計算
-vt_1wk_change = calculate_weekly_change(vt_data)
-voo_1wk_change = calculate_weekly_change(voo_data)
-qqq_1wk_change = calculate_weekly_change(qqq_data)
+    vt_daily_change = calculate_daily_change(vt_data)
+    voo_daily_change = calculate_daily_change(voo_data)
+    qqq_daily_change = calculate_daily_change(qqq_data)
 
-print(f"VT - 日次: {vt_daily_change}%, 週次: {vt_1wk_change}%")
-print(f"VOO - 日次: {voo_daily_change}%, 週次: {voo_1wk_change}%")
-print(f"QQQ - 日次: {qqq_daily_change}%, 週次: {qqq_1wk_change}%")
+    # 1週間前との計算
+    vt_1wk_change = calculate_weekly_change(vt_data)
+    voo_1wk_change = calculate_weekly_change(voo_data)
+    qqq_1wk_change = calculate_weekly_change(qqq_data)
 
-# 閾値の設定
-DAILY_THRESHOLD = 999
-WEEKLY_THRESHOLD = 999
+    print(f"VT - 日次: {vt_daily_change}%, 週次: {vt_1wk_change}%")
+    print(f"VOO - 日次: {voo_daily_change}%, 週次: {voo_1wk_change}%")
+    print(f"QQQ - 日次: {qqq_daily_change}%, 週次: {qqq_1wk_change}%")
 
-ticker_data_for_check = [
-    {
-        'name': 'VT',
-        'daily_change': vt_daily_change,
-        'weekly_change': vt_1wk_change,
-        'current_price': vt_data['Close'].iloc[-1]
-    },
-    {
-        'name': 'VOO',
-        'daily_change': voo_daily_change,
-        'weekly_change': voo_1wk_change,
-        'current_price': voo_data['Close'].iloc[-1]
-    },
-    {
-        'name': 'QQQ',
-        'daily_change': qqq_daily_change,
-        'weekly_change': qqq_1wk_change,
-        'current_price': qqq_data['Close'].iloc[-1]
+    # 閾値の設定
+    DAILY_THRESHOLD = 999
+    WEEKLY_THRESHOLD = 999
+
+    ticker_data_for_check = [
+        {
+            'name': 'VT',
+            'daily_change': vt_daily_change,
+            'weekly_change': vt_1wk_change,
+            'current_price': vt_data['Close'].iloc[-1]
+        },
+        {
+            'name': 'VOO',
+            'daily_change': voo_daily_change,
+            'weekly_change': voo_1wk_change,
+            'current_price': voo_data['Close'].iloc[-1]
+        },
+        {
+            'name': 'QQQ',
+            'daily_change': qqq_daily_change,
+            'weekly_change': qqq_1wk_change,
+            'current_price': qqq_data['Close'].iloc[-1]
+        }
+    ]
+
+    notification_needed = check_and_notify_all_tickers(ticker_data_for_check, DAILY_THRESHOLD, WEEKLY_THRESHOLD)
+
+    if notification_needed:
+        # LINE通知
+        line_notifier = LineMessagingNotifier()
+        message = format_notification_message(ticker_data_for_check)
+        line_notifier.send_message(message)
+
+    # Lambda用のレスポンス
+    return {
+        'statusCode': 200,
+        'body': {
+            'notification_sent': notification_needed,
+            'ticker_count': len(ticker_data_for_check),
+            'message': 'Stock monitoring completed successfully'
+        }
     }
-]
-
-notification_needed = check_and_notify_all_tickers(ticker_data_for_check, DAILY_THRESHOLD, WEEKLY_THRESHOLD)
-
-if notification_needed:
-    def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
-        alert_message = "📊 株価下落アラート\n\n"
-        for ticker in ticker_data_list:
-            alert_message += f"【{ticker['name']}】\n"
-            alert_message += f"現在値: ${ticker['current_price']:.2f}\n"
-            alert_message += f"前日比: {ticker['daily_change']}%\n"
-            alert_message += f"前週比: {ticker['weekly_change']}%\n\n"
-        return alert_message.strip()
 
 
-    # LINE通知
-    line_notifier = LineMessagingNotifier()
-    message = format_notification_message(ticker_data_for_check)
-    line_notifier.send_message(message)
+# スクリプトとして実行された場合のみメイン処理を実行
+if __name__ == "__main__":
+    lambda_handler(None, None)
