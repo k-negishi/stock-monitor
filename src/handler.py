@@ -6,11 +6,19 @@ import yfinance as yf
 
 from src.line_notifier import LineMessagingNotifier
 
-# 前日比が指定%よりも下回っているかを判定する関数
 def is_below_threshold(change: float, threshold: float) -> bool:
     return change <= threshold
 
 def calculate_daily_change(stock_data: pd.DataFrame):
+    """
+    前日比の変動率を計算
+
+    Args:
+        stock_data (pd.DataFrame): 株価データ
+
+    Returns:
+        float: 前日比変動率（%、小数点以下2桁）
+    """
     latest = stock_data['Close'].iloc[-1]
     previous = stock_data['Close'].iloc[-2]
     change = ((latest - previous) / previous) * 100
@@ -55,6 +63,16 @@ def check_and_notify_all_tickers(
     )
 
 def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
+    """
+    LINE通知用のメッセージを整形
+
+    Args:
+        ticker_data_list (List[Dict[str, float]]): ティッカーデータのリスト
+            [{'name': str, 'daily_change': float, 'weekly_change': float, 'current_price': float}, ...]
+
+      Returns:
+        str: 整形されたメッセージ文字列
+    """
     alert_message = "📊 株価下落アラート\n\n"
     for ticker in ticker_data_list:
         alert_message += f"【{ticker['name']}】\n"
