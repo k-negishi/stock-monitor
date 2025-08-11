@@ -1,4 +1,4 @@
-name: Deploy Stock Alert System
+name: Deploy ETF Price Tracker
 
 on:
   push:
@@ -45,7 +45,7 @@ jobs:
           sam deploy \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
-            --stack-name stock-alert \
+            --stack-name etf-price-tracker \
             --s3-bucket ${{ secrets.SAM_DEPLOYMENT_BUCKET }} \
             --region ${{ env.AWS_REGION }} \
             --capabilities CAPABILITY_IAM

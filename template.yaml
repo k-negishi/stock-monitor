@@ -1,16 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: ETF下落アラート
+Description: ETF Price Tracker
 
 Parameters:
   LineChannelAccessToken:
     Type: AWS::SSM::Parameter::Value<String>
-    Default: /stock-alert/line-channel-access-token
+    Default: /etf-price-tracker/line-channel-access-token
     Description: LINE Channel Access Token
 
   LineUserId:
     Type: AWS::SSM::Parameter::Value<String>
-    Default: /stock-alert/line-user-id
+    Default: /etf-price-tracker/line-user-id
     Description: LINE User ID
 
 Globals:
@@ -20,13 +20,13 @@ Globals:
     Runtime: python3.13
 
 Resources:
-  StockAlertFunction:
+  EtfPriceTrackerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: stock-alert-function
+      FunctionName: etf-price-tracker-function
       CodeUri: .
       Handler: src.handler.lambda_handler
-      Description: ETF下落監視Lambda関数
+      Description: ETF Price Tracker Lambda Function
       Environment:
         Variables:
           LINE_CHANNEL_ACCESS_TOKEN: !Ref LineChannelAccessToken
@@ -38,7 +38,7 @@ Resources:
           Properties:
             # 日本時間AM11:30(UTC AM2:30, NY時間 PM 22:30)
             Schedule: cron(30 2 ? * TUE-SAT *) # 日本時間の火曜日から土曜日の午前11時30分に実行
-            Description: ETF下落監視のスケジュールイベント
+            Description: ETF Price Tracker Schedule Event
             Enabled: true
       Policies:
         - Version: "2012-10-17"
@@ -50,17 +50,17 @@ Resources:
                 - logs:PutLogEvents
               Resource: "*"
 
-  StockAlertLogGroup:
+  EtfPriceTrackerLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/stock-alert-function"
+      LogGroupName: !Sub "/aws/lambda/etf-price-tracker-function"
       RetentionInDays: 14
 
 Outputs:
-  StockAlertFunction:
-    Description: Stock Alert Lambda Function ARN
-    Value: !GetAtt StockAlertFunction.Arn
+  EtfPriceTrackerFunction:
+    Description: ETF Price Tracker Lambda Function ARN
+    Value: !GetAtt EtfPriceTrackerFunction.Arn
 
-  StockAlertFunctionIamRole:
-    Description: Implicit IAM Role created for Stock Alert function
-    Value: !GetAtt StockAlertFunctionRole.Arn
+  EtfPriceTrackerFunctionIamRole:
+    Description: Implicit IAM Role created for ETF Price Tracker function
+    Value: !GetAtt EtfPriceTrackerFunctionRole.Arn
