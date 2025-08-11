@@ -70,7 +70,6 @@ def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str
 
 
 def lambda_handler(event, context):
-    """AWS Lambda エントリーポイント"""
     print("データ取得開始...")
 
     targets = ['VT', 'VOO', 'QQQ']
@@ -79,7 +78,14 @@ def lambda_handler(event, context):
 
     # 直近の日付が現在日付-1ではない場合は、処理をスキップ(米国市場の休場日を判定)
     # if all_data.index[-1].date() != datetime.datetime.now().date() - datetime.timedelta(days=1):
-    #     exit(-1)
+    #     return {
+    #         'statusCode': 200,
+    #         'body': {
+    #             'notification_sent': False,
+    #             'ticker_count': 0,
+    #             'message': 'Market is closed today'
+    #         }
+    #     }
 
     # 各ティッカーのデータを個別の変数に格納
     vt_data = all_data['VT']
@@ -127,10 +133,11 @@ def lambda_handler(event, context):
         }
     ]
 
-    notification_needed = check_and_notify_all_tickers(ticker_data_for_check, DAILY_THRESHOLD, WEEKLY_THRESHOLD)
+    # notification_needed = check_and_notify_all_tickers(ticker_data_for_check, DAILY_THRESHOLD, WEEKLY_THRESHOLD)
+    notification_needed = True
 
+    # 閾値を下回るETFが1つでも存在する場合、LINE通知を送信
     if notification_needed:
-        # LINE通知
         line_notifier = LineMessagingNotifier()
         message = format_notification_message(ticker_data_for_check)
         line_notifier.send_message(message)
