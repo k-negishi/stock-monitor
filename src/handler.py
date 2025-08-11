@@ -6,82 +6,6 @@ import yfinance as yf
 
 from src.line_notifier import LineMessagingNotifier
 
-def _is_below_threshold(change: float, threshold: float) -> bool:
-    return change <= threshold
-
-def _calculate_daily_change(stock_data: pd.DataFrame):
-    """
-    前日比の変動率を計算
-
-    Args:
-        stock_data (pd.DataFrame): 株価データ
-
-    Returns:
-        float: 前日比変動率（%、小数点以下2桁）
-    """
-    latest = stock_data['Close'].iloc[-1]
-    previous = stock_data['Close'].iloc[-2]
-    change = ((latest - previous) / previous) * 100
-    return round(change, 2)
-
-def _calculate_weekly_change(stock_data: pd.DataFrame):
-    """
-    1週間前比の変動率を計算
-
-    Args:
-        stock_data (pd.DataFrame): 株価データ
-
-    Returns:
-        float: 変動率（%）
-    """
-    oldest_price = stock_data['Close'].iloc[-5]
-    current_price = stock_data['Close'].iloc[-1]
-    change_pct = ((current_price - oldest_price) / oldest_price) * 100
-    return round(change_pct, 2)
-
-
-def _check_and_notify_all_tickers(
-        ticker_data_list: List[Dict[str, float]],
-        daily_threshold: float,
-        weekly_threshold: float
-) -> bool:
-    """
-    Args:
-        ticker_data_list (list): ティッカーデータのリスト
-            [{'name': str, 'daily_change': float, 'weekly_change': float, 'current_price': float}, ...]
-        daily_threshold (float): 日次変動の閾値
-        weekly_threshold (float): 週次変動の閾値
-    
-    Returns:
-        bool: 通知が必要かどうか（1つでも閾値を下回っていればTrue）
-    """
-    # 各ティッカーの閾値判定
-    return any(
-        _is_below_threshold(ticker['daily_change'], daily_threshold) or
-        _is_below_threshold(ticker['weekly_change'], weekly_threshold)
-        for ticker in ticker_data_list
-    )
-
-def _format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
-    """
-    LINE通知用のメッセージを整形
-
-    Args:
-        ticker_data_list (List[Dict[str, float]]): ティッカーデータのリスト
-            [{'name': str, 'daily_change': float, 'weekly_change': float, 'current_price': float}, ...]
-
-      Returns:
-        str: 整形されたメッセージ文字列
-    """
-    alert_message = "⚠️ 株価下落アラート\n\n"
-    for ticker in ticker_data_list:
-        alert_message += f"【{ticker['name']}】\n"
-        alert_message += f"現在値: ${ticker['current_price']:.2f}\n"
-        alert_message += f"前日比: {ticker['daily_change']}%\n"
-        alert_message += f"前週比: {ticker['weekly_change']}%\n\n"
-    return alert_message.strip()
-
-
 def lambda_handler(event, context):
     targets = ['VT', 'VOO', 'QQQ']
     all_data = yf.download(targets, period='1mo', group_by='ticker', auto_adjust=True)
@@ -158,6 +82,81 @@ def lambda_handler(event, context):
         }
     }
 
+
+def _is_below_threshold(change: float, threshold: float) -> bool:
+    return change <= threshold
+
+def _calculate_daily_change(stock_data: pd.DataFrame):
+    """
+    前日比の変動率を計算
+
+    Args:
+        stock_data (pd.DataFrame): 株価データ
+
+    Returns:
+        float: 前日比変動率（%、小数点以下2桁）
+    """
+    latest = stock_data['Close'].iloc[-1]
+    previous = stock_data['Close'].iloc[-2]
+    change = ((latest - previous) / previous) * 100
+    return round(change, 2)
+
+def _calculate_weekly_change(stock_data: pd.DataFrame):
+    """
+    1週間前比の変動率を計算
+
+    Args:
+        stock_data (pd.DataFrame): 株価データ
+
+    Returns:
+        float: 変動率（%）
+    """
+    oldest_price = stock_data['Close'].iloc[-5]
+    current_price = stock_data['Close'].iloc[-1]
+    change_pct = ((current_price - oldest_price) / oldest_price) * 100
+    return round(change_pct, 2)
+
+
+def _check_and_notify_all_tickers(
+        ticker_data_list: List[Dict[str, float]],
+        daily_threshold: float,
+        weekly_threshold: float
+) -> bool:
+    """
+    Args:
+        ticker_data_list (list): ティッカーデータのリスト
+            [{'name': str, 'daily_change': float, 'weekly_change': float, 'current_price': float}, ...]
+        daily_threshold (float): 日次変動の閾値
+        weekly_threshold (float): 週次変動の閾値
+    
+    Returns:
+        bool: 通知が必要かどうか（1つでも閾値を下回っていればTrue）
+    """
+    # 各ティッカーの閾値判定
+    return any(
+        _is_below_threshold(ticker['daily_change'], daily_threshold) or
+        _is_below_threshold(ticker['weekly_change'], weekly_threshold)
+        for ticker in ticker_data_list
+    )
+
+def _format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
+    """
+    LINE通知用のメッセージを整形
+
+    Args:
+        ticker_data_list (List[Dict[str, float]]): ティッカーデータのリスト
+            [{'name': str, 'daily_change': float, 'weekly_change': float, 'current_price': float}, ...]
+
+      Returns:
+        str: 整形されたメッセージ文字列
+    """
+    alert_message = "⚠️ 株価下落アラート\n\n"
+    for ticker in ticker_data_list:
+        alert_message += f"【{ticker['name']}】\n"
+        alert_message += f"現在値: ${ticker['current_price']:.2f}\n"
+        alert_message += f"前日比: {ticker['daily_change']}%\n"
+        alert_message += f"前週比: {ticker['weekly_change']}%\n\n"
+    return alert_message.strip()
 
 # スクリプトとして実行された場合のみメイン処理を実行
 if __name__ == "__main__":
