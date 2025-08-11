@@ -20,7 +20,7 @@
 
 ### 概要
 
-VT、VOO、QQQなどの人気ETFの価格を監視し、設定した割合よりも下落した場合にLINE通知する AWS Lambda ベースのアプリケーションです。
+VT、VOO、QQQの人気ETFの価格を監視し、設定した割合よりも下落した場合にLINE通知する AWS Lambda ベースのアプリケーションです。
 
 ### 使用技術
 - AWS Lambda
