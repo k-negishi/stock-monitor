@@ -10,7 +10,6 @@ project_root = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'src'))
 
-
 from src.handler import (
     is_below_threshold,
     calculate_daily_change,
