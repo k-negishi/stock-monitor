@@ -106,11 +106,5 @@ class LineMessagingNotifier:
             logger.info("LINE通知送信成功")
             return {"status": "success"}
         else:
-            # エラー時は単純にHTTPステータスコードで例外発生
-            print(response.text)
-            raise Exception(f"LINE API エラー: HTTP {response.status_code}")
 
-# line notifierを実行するためのexample code
-line_notifier = LineMessagingNotifier()
-print(line_notifier)
-line_notifier.send_message("test")
+            raise Exception(f"LINE API エラー: HTTP {response.status_code}, Message: {response.text}")
