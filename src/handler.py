@@ -151,6 +151,7 @@ def _format_notification_message(
     LINE通知用のメッセージを整形
 
     Args:
+        latest_date: 最新の日付
         ticker_data_list (List[Dict[str, float]]): ティッカーデータのリスト
             [{'name': str, 'daily_change': float, 'weekly_change': float, 'current_price': float}, ...]
 
