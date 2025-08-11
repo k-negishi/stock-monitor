@@ -48,16 +48,11 @@ def check_and_notify_all_tickers(
         bool: 通知が必要かどうか（1つでも閾値を下回っていればTrue）
     """
     # 各ティッカーの閾値判定
-    for ticker in ticker_data_list:
-        daily_alert = is_below_threshold(ticker['daily_change'], daily_threshold)
-        weekly_alert = is_below_threshold(ticker['weekly_change'], weekly_threshold)
-
-        # 1つでも閾値を下回っていればTrueを返す
-        if daily_alert or weekly_alert:
-            return True
-
-    # すべて正常範囲内
-    return False
+    return any(
+        is_below_threshold(ticker['daily_change'], daily_threshold) or
+        is_below_threshold(ticker['weekly_change'], weekly_threshold)
+        for ticker in ticker_data_list
+    )
 
 def format_notification_message(ticker_data_list: List[Dict[str, float]]) -> str:
     alert_message = "📊 株価下落アラート\n\n"
