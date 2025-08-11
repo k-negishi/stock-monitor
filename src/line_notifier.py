@@ -56,7 +56,7 @@ class LineMessagingNotifier:
         }
 
     @retry_notification(max_retries=3, delay=10)
-    def send_message(self, message):
+    def send_message(self, message: str) -> dict:
         """
         LINE通知メッセージを送信（リトライ機能付き）
 
