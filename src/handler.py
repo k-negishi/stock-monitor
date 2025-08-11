@@ -6,6 +6,7 @@ import yfinance as yf
 
 from src.line_notifier import LineMessagingNotifier
 
+
 def lambda_handler(event, context):
     targets = ['VT', 'VOO', 'QQQ']
     all_data = yf.download(targets, period='1mo', group_by='ticker', auto_adjust=True)
@@ -66,7 +67,7 @@ def lambda_handler(event, context):
     # notification_needed = check_and_notify_all_tickers(ticker_data_for_check, DAILY_THRESHOLD, WEEKLY_THRESHOLD)
     notification_needed = True
 
-# 閾値を下回るETFが1つでも存在する場合、LINE通知を送信
+    # 閾値を下回るETFが1つでも存在する場合、LINE通知を送信
     if notification_needed:
         line_notifier = LineMessagingNotifier()
 
@@ -90,6 +91,7 @@ def lambda_handler(event, context):
 def _is_below_threshold(change: float, threshold: float) -> bool:
     return change <= threshold
 
+
 def _calculate_daily_change(stock_data: pd.DataFrame):
     """
     前日比の変動率を計算
@@ -104,6 +106,7 @@ def _calculate_daily_change(stock_data: pd.DataFrame):
     previous = stock_data['Close'].iloc[-2]
     change = ((latest - previous) / previous) * 100
     return round(change, 2)
+
 
 def _calculate_weekly_change(stock_data: pd.DataFrame):
     """
@@ -143,6 +146,7 @@ def _check_and_notify_all_tickers(
         for ticker in ticker_data_list
     )
 
+
 def _format_notification_message(
         latest_date: str,
         ticker_data_list: List[Dict[str, float]]
@@ -166,6 +170,7 @@ def _format_notification_message(
         alert_message += f"前日比: {ticker['daily_change']}%\n"
         alert_message += f"前週比: {ticker['weekly_change']}%\n\n"
     return alert_message.strip()
+
 
 # スクリプトとして実行された場合のみメイン処理を実行
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ import os
 import requests
 from functools import wraps
 
+
 def retry_notification(max_retries=3, delay=10):
     """
     通知送信用リトライデコレータ
@@ -10,6 +11,7 @@ def retry_notification(max_retries=3, delay=10):
         max_retries (int): 最大リトライ回数
         delay (int): リトライ間隔（秒）
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -29,7 +31,9 @@ def retry_notification(max_retries=3, delay=10):
             raise last_exception if last_exception else Exception("通知送信失敗")
 
         return wrapper
+
     return decorator
+
 
 class LineMessagingNotifier:
     """
