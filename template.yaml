@@ -3,10 +3,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: ETF下落アラート
 
 Parameters:
-  LineNotifyToken:
+  LineChannelAccessToken:
     Type: AWS::SSM::Parameter::Value<String>
-    Default: /stock-alert/line-notify-token
-    Description: LINE Notify API Token
+    Default: /stock-alert/line-channel-access-token
+    Description: LINE Channel Access Token
+
+  LineUserId:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /stock-alert/line-user-id
+    Description: LINE User ID
 
 Globals:
   Function:
@@ -22,10 +27,15 @@ Resources:
       CodeUri: src/
       Handler: handler.lambda_handler
       Description: ETF下落監視Lambda関数
+      Runtime: python3.13
       Environment:
         Variables:
           LINE_CHANNEL_ACCESS_TOKEN: !Ref LineChannelAccessToken
           LINE_USER_ID: !Ref LineUserId
+      Metadata:
+        BuildMethod: python3.13
+        BuildProperties:
+          sourcePath: ../requirements.txt
 
       Events:
         ScheduleEvent:
