@@ -41,7 +41,7 @@ VT、VOO、QQQの人気ETFの価格を監視し、設定した割合よりも下
 ### LINE 通知メッセージの例
 例1:
 ```
-⚠️株価下落アラート　2025-04-03
+📈ETF Price Tracker 2025-04-03
 
 【VT】
 現在値: $100.20
@@ -61,7 +61,7 @@ VT、VOO、QQQの人気ETFの価格を監視し、設定した割合よりも下
 
 例2:
 ```
-⚠️株価下落アラート　2020-03-16
+📈ETF Price Tracker 2020-03-16
 
 【VT】
 現在値: $61.30
@@ -140,7 +140,7 @@ Note: Notification messages are only available in Japanese.
 
 Example 1:
 ```
-⚠️株価下落アラート　2025-04-03
+📈ETF Price Tracker 2025-04-03
 
 【VT】
 現在値: $100.20
@@ -160,7 +160,7 @@ Example 1:
 
 Example 2:
 ```
-⚠️株価下落アラート　2020-03-16
+📈ETF Price Tracker 2020-03-16
 
 【VT】
 現在値: $61.30
