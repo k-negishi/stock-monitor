@@ -39,8 +39,9 @@ def lambda_handler(event, context):
     qqq_1wk_change = _calculate_weekly_change(qqq_data)
 
     # 閾値の設定
-    DAILY_THRESHOLD = 999
-    WEEKLY_THRESHOLD = 999
+    # TODO パイロット用にコメントアウトしたが、もうこのままでいいかも
+    # DAILY_THRESHOLD = -2.0
+    # WEEKLY_THRESHOLD = -5.0
 
     ticker_data_for_check = [
         {
