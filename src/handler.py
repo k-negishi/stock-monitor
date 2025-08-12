@@ -63,7 +63,7 @@ def lambda_handler(event, context):
         }
     ]
 
-    # TODO パイロット用にコメントアウト
+    # TODO パイロット用にコメントアウトしたけど、便利だしこのままでいいかも。
     # notification_needed = check_and_notify_all_tickers(ticker_data_for_check, DAILY_THRESHOLD, WEEKLY_THRESHOLD)
     notification_needed = True
 
