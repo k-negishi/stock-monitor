@@ -218,7 +218,7 @@ class TestFormatNotificationMessage:
 
         date = '2025-01-01'
         result = _format_notification_message(date, ticker_data)
-        expected = ("⚠️株価下落アラート  2025-01-01\n\n"
+        expected = ("📈ETF Price Tracker 2025-01-01\n\n"
                     "【VT】\n"
                     "現在値: $98.75\n"
                     "前日比: -2.5%\n"
