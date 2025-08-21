@@ -11,7 +11,6 @@ def lambda_handler(event, context):
     targets = ['VT', 'VOO', 'QQQ']
     all_data = yf.download(targets, period='1mo', group_by='ticker', auto_adjust=True)
 
-    # TODO パイロット用にコメントアウト
     # 直近の日付が現在日付-1ではない場合は、処理をスキップ(米国市場の休場日を判定)
     if all_data.index[-1].date() != datetime.datetime.now().date() - datetime.timedelta(days=1):
         return {
